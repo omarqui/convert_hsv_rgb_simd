@@ -1,11 +1,9 @@
 using System;
-
 namespace hsv_rgb_simd
 {
     public class HSV
-    {
-        private const int MAX_RGB_VALUE = 255;
-        private const double HUE_DIVISOR = 60;
+    {        
+        public const double HUE_DIVISOR = 60;
 
         public Int16 Hue { get; set; }
         public Double Saturation { get; set; }
@@ -67,9 +65,9 @@ namespace hsv_rgb_simd
 
             double factor = Value - choma;
             short red, green, blue;
-            red = (short) Math.Round(((redHelper + factor) * MAX_RGB_VALUE),0);
-            green = (short) Math.Round(((greenHelper + factor) * MAX_RGB_VALUE));
-            blue = (short) Math.Round(((blueHelper + factor) * MAX_RGB_VALUE));
+            red = (short) Math.Round(((redHelper + factor) * RGB.MAX_RGB_VALUE),0);
+            green = (short) Math.Round(((greenHelper + factor) * RGB.MAX_RGB_VALUE));
+            blue = (short) Math.Round(((blueHelper + factor) * RGB.MAX_RGB_VALUE));
             return new RGB(red,green,blue);
         }
     }
