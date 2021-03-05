@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace hsv_rgb_simd
 {
@@ -7,49 +6,28 @@ namespace hsv_rgb_simd
     {
         static void Main(string[] args)
         {
-            Stopwatch sw = new Stopwatch();
-            HSV[] list = GenerateHsv(10000000);
-
-            
-            // sw.Start();
-            // RGB[] rgbArray = new RGB[list.Length];
-            // for(int i = 0; i < list.Length; i++)
-            // {
-            //     rgbArray[i] = list[i].toRGB();
-            // }            
-            // sw.Stop();
-
-            // Console.WriteLine("1 - Elapsed={0}", sw.Elapsed);
-
-            
-            // sw.Reset();
-            sw.Start();            
-            RGB[] rgbArray2 = HSV.ToRGBSimd(list);
-
-            sw.Stop();
-
-            Console.WriteLine("2 - Elapsed={0}", sw.Elapsed);
-            // sw.Reset();
-
+            TestSimpleConvert();
+            TestSimdConvert_4();
+            TestSimdConvert_1000();            
         }
 
-        private static void prueba1()
+        private static void TestSimpleConvert()
         {
-            Stopwatch sw = new Stopwatch();
-
-            sw.Start();
             HSV colorHsv = new HSV(270, 0.5f, 0.5f);
             RGB colorRgb = colorHsv.toRGB();
-            // HSV newHsv = colorRgb.toHSV();
 
-            Console.WriteLine(colorRgb.Red);
-            Console.WriteLine(colorRgb.Green);
-            Console.WriteLine(colorRgb.Blue);
-            sw.Stop();
+            Console.WriteLine("From HSV to RGB");
+            PrintHsvToRgb(colorHsv, colorRgb);
 
-            Console.WriteLine("Elapsed={0}", sw.Elapsed);
+            HSV colorHsv2 = colorRgb.toHSV();
+            Console.WriteLine("");
+            Console.WriteLine("From RGB to HSV");
+            PrintRgbToHsv(colorRgb, colorHsv2);
+        }
 
-            sw.Start();
+        private static void TestSimdConvert_4(){
+            HSV colorHsv = new HSV(270, 0.5f, 0.5f);
+            RGB colorRgb = colorHsv.toRGB();            
             HSV[] hsvArray = new HSV[]{
                 colorHsv,
                 colorHsv,
@@ -57,21 +35,29 @@ namespace hsv_rgb_simd
                 colorHsv
             };
             RGB[] rgbArray = HSV.ToRGBSimd(hsvArray);
-            RGB colorRgb2 = rgbArray[0];
-            // HSV newHsv = colorRgb.toHSV();
-
-            Console.WriteLine(colorRgb2.Red);
-            Console.WriteLine(colorRgb2.Green);
-            Console.WriteLine(colorRgb2.Blue);
-            // Console.WriteLine(newHsv.Hue);
-            // Console.WriteLine(newHsv.Saturation);
-            // Console.WriteLine(newHsv.Value);
-            sw.Stop();
-
-            Console.WriteLine("Elapsed={0}", sw.Elapsed);
+            RGB colorRgb2 = rgbArray[0];            
+            
+            Console.WriteLine("Test Simd 4 ");
+            for (int i = 0; i < rgbArray.Length; i++)
+            {
+                PrintHsvToRgb(hsvArray[i],rgbArray[i]);
+            }            
         }
 
-        static HSV[] GenerateHsv(int cant)
+        private static void TestSimdConvert_1000(){
+
+            HSV[] hsvArray = GenerateHsv(1000);                                         
+            RGB[] rgbArray = HSV.ToRGBSimd(hsvArray);
+                        
+            Console.WriteLine("Test Simd 1000 ");
+            for (int i = 0; i < rgbArray.Length; i++)
+            {
+                Console.Write(i+"-");
+                PrintHsvToRgb(hsvArray[i],rgbArray[i]);
+            }     
+        }
+
+        private static HSV[] GenerateHsv(int cant)
         {
             HSV colorHsv = new HSV(270, 0.5f, 0.5f);
             HSV[] result = new HSV[cant];
@@ -80,6 +66,18 @@ namespace hsv_rgb_simd
                 result[i] = colorHsv;
             }
             return result;
+        }
+
+        private static void PrintRgbToHsv(RGB colorRgb, HSV colorHsv2)
+        {
+            Console.WriteLine($"({colorRgb.Red},{colorRgb.Green},{colorRgb.Blue}) = " +
+                                          $"({colorHsv2.Hue},{colorHsv2.Saturation},{colorHsv2.Value})");
+        }
+
+        private static void PrintHsvToRgb(HSV colorHsv, RGB colorRgb)
+        {
+            Console.WriteLine($"({colorHsv.Hue},{colorHsv.Saturation},{colorHsv.Value}) => " +
+                              $"({colorRgb.Red},{colorRgb.Green},{colorRgb.Blue})");
         }
     }
 }

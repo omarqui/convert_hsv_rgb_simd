@@ -75,14 +75,11 @@ namespace hsv_rgb_simd
 
                 cromaVector = valueVector * saturationVector;
                 hueDivisorVector = new Vector<float>(HUE_DIVISOR);
-                hueModVector = ModVector(hueVector, hueDivisorVector);
+                hueModVector = ModVector(hueVector / hueDivisorVector, new Vector<float>(2));
 
-                chomaAlfaVector = Vector<float>.One - Vector.Abs<float>(hueModVector - Vector<float>.One);
+                chomaAlfaVector = (Vector<float>.One - (Vector.Abs<float>(hueModVector - Vector<float>.One)));
                 intermediateVector = cromaVector * chomaAlfaVector;
                 quotient60Vector = hueVector / hueDivisorVector;
-                redHelperVector = new Vector<float>();
-                greenHelperVector = new Vector<float>();
-                blueHelperVector = new Vector<float>();
 
                 for (int j = 0; j < vectorSize; j++)
                 {
@@ -121,6 +118,9 @@ namespace hsv_rgb_simd
                             break;
                     }
                 }
+                redHelperVector = new Vector<float>(redHelperArray, i);
+                greenHelperVector = new Vector<float>(greenHelperArray, i);
+                blueHelperVector = new Vector<float>(blueHelperArray, i);
 
                 factorVector = valueVector - cromaVector;
                 maxRgbVector = new Vector<float>(RGB.MAX_RGB_VALUE);
@@ -135,7 +135,9 @@ namespace hsv_rgb_simd
 
             for (int i = 0; i < redArray.Length; i++)
             {
-                rgbArray[i] = new RGB((short)redArray[i], (short)greenArray[i], (short)blueArray[i]);
+                rgbArray[i] = new RGB((short)Math.Round(redArray[i]), 
+                                      (short)Math.Round(greenArray[i]), 
+                                      (short)Math.Round(blueArray[i]));
             }
 
             return rgbArray;
@@ -145,7 +147,7 @@ namespace hsv_rgb_simd
         {
             Vector<float> disition = hueVector / divisor;
             return (disition - Vector.ConvertToSingle(Vector.ConvertToInt32(disition))) * divisor;
-        }        
+        }
 
         public RGB toRGB()
         {
