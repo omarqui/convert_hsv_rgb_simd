@@ -22,31 +22,31 @@ namespace hsv_rgb_simd
 
         public HSV toHSV()
         {
-            double redHelper = (double)Red / MAX_RGB_VALUE,
-                   greenHelper = (double)Green / MAX_RGB_VALUE,
-                   blueHelper = (double)Blue / MAX_RGB_VALUE;            
+            float redHelper = (float)Red / MAX_RGB_VALUE,
+                   greenHelper = (float)Green / MAX_RGB_VALUE,
+                   blueHelper = (float)Blue / MAX_RGB_VALUE;            
 
-            double cromaMax = GetMax(redHelper, greenHelper, blueHelper);
-            double cromaMin = GetMin(redHelper, greenHelper, blueHelper);
-            double croma = cromaMax - cromaMin;
-            double doubleHue = 0;
+            float cromaMax = GetMax(redHelper, greenHelper, blueHelper);
+            float cromaMin = GetMin(redHelper, greenHelper, blueHelper);
+            float croma = cromaMax - cromaMin;
+            float floatHue = 0;
 
-            if (cromaMax == redHelper) doubleHue = HSV.HUE_DIVISOR * (((greenHelper - blueHelper) / croma) % 6);
-            if (cromaMax == greenHelper) doubleHue = HSV.HUE_DIVISOR * (((blueHelper - redHelper) / croma) + 2);
-            if (cromaMax == blueHelper) doubleHue = HSV.HUE_DIVISOR * (((redHelper - greenHelper) / croma) + 4);
+            if (cromaMax == redHelper) floatHue = HSV.HUE_DIVISOR * (((greenHelper - blueHelper) / croma) % 6);
+            if (cromaMax == greenHelper) floatHue = HSV.HUE_DIVISOR * (((blueHelper - redHelper) / croma) + 2);
+            if (cromaMax == blueHelper) floatHue = HSV.HUE_DIVISOR * (((redHelper - greenHelper) / croma) + 4);
 
-            double saturation = (cromaMax == 0) ? 0 : croma / cromaMax;
-            double value = cromaMax;
-            short hue = (short)Math.Round(doubleHue, 0);
+            float saturation = (cromaMax == 0) ? 0 : croma / cromaMax;
+            float value = cromaMax;
+            short hue = (short)Math.Round(floatHue, 0);
             return new HSV(hue, saturation, value);
         }
 
-        static double GetMax(double value1, double value2, double value3)
+        static float GetMax(float value1, float value2, float value3)
         {
             return Math.Max(Math.Max(value1, value2), value3);
         }
 
-        static double GetMin(double value1, double value2, double value3)
+        static float GetMin(float value1, float value2, float value3)
         {
             return Math.Min(Math.Min(value1, value2), value3);
         }
